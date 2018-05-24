@@ -1,0 +1,150 @@
+﻿<Window x:Class="BoneEditor.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:BoneEditor"
+        mc:Ignorable="d"
+        Drop="DropFile"
+        AllowDrop="True"
+        Title="BMGui Koikatsu Bone Modifier GUI 1.0     ▲ by Dev ▼" Height="900" Width="1080">
+    <Window.Resources>
+        <local:ValueToBackgroundConverter x:Key="ValueToBackgroundConverter" />
+        <Style x:Key="ItemContStyle" TargetType="{x:Type ListViewItem}">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Enabled}" Value="true">
+                    <Setter Property="Background" Value="{DynamicResource ResourceKey=ActiveBrush}" />
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <LinearGradientBrush x:Key="ActiveBrush"  StartPoint="0,0" EndPoint="1,0" >
+            <GradientStop Color="Yellow" Offset="0.0" />
+            <GradientStop Color="#90FF00" Offset="0.8" />
+            <GradientStop Color="#00CAFF" Offset="1.0" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="PlusBrush"  StartPoint="0,0" EndPoint="0,1" >
+            <GradientStop Color="White" Offset="0.0" />
+            <GradientStop Color="#90FF00" Offset="0.5" />
+            <GradientStop Color="Lime" Offset="1.0" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="MinusBrush"  StartPoint="0,0" EndPoint="0,1" >
+            <GradientStop Color="White" Offset="0.0" />
+            <GradientStop Color="#FF8300" Offset="0.5" />
+            <GradientStop Color="Red" Offset="1.0" />
+        </LinearGradientBrush>
+    </Window.Resources>
+    <Grid>
+        <TextBlock Margin="4">
+            <TextBlock.Inlines>
+                <Run Text="Load" FontWeight="Bold"></Run>
+                <Run Text=": drag and drop a bones or descriptor xml here"/>
+                <Run Text="  Modify" FontWeight="Bold"/>
+                <Run Text=": use sliders to edit in real time"></Run>
+                <Run Text="  Reset" FontWeight="Bold"/>
+                <Run Text=": right click on slider"></Run>
+                <Run Text="  Filter" FontWeight="Bold"/>
+                <Run Text=": to narrow down criteria"></Run>
+            </TextBlock.Inlines></TextBlock>
+        <TextBox Margin="1" Height="22" Name="Filterbox" HorizontalAlignment="Right" VerticalAlignment="Top" TextWrapping="Wrap" Text="" Width="120" PreviewKeyUp="FilterChanged"/>
+        <CheckBox VerticalAlignment="Top" HorizontalAlignment="Right" Margin="130,5" Click="ToggleModifyOnlyFilter" Name="filterModOnlyCb" Content="Filter Modified" />
+        <ListView Margin="4,24,0,0" Name="bonesview" ItemContainerStyle="{StaticResource ItemContStyle}">
+            <ListView.GroupStyle>
+                <GroupStyle>
+                    <GroupStyle.ContainerStyle>
+                        <Style TargetType="{x:Type GroupItem}">
+                            <Setter Property="Margin" Value="0,0,0,5"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="{x:Type GroupItem}">
+                                        <Expander IsExpanded="True" BorderBrush="#FFA4B97F"  BorderThickness="0,0,0,1">
+                                            <Expander.Header>
+                                                <DockPanel>
+                                                    <TextBlock FontWeight="Bold" Text="{Binding Path=Name}"  Margin="5,0,0,0" Width="200"/>
+                                                </DockPanel>
+                                            </Expander.Header>
+                                            <Expander.Content>
+                                                <ItemsPresenter />
+                                            </Expander.Content>
+                                        </Expander>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </GroupStyle.ContainerStyle>
+                </GroupStyle>
+                </ListView.GroupStyle>
+                <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Id" Width="30" DisplayMemberBinding="{Binding Id}" />
+                    <GridViewColumn Header="Code" Width="110" DisplayMemberBinding="{Binding Code}" />
+                    <GridViewColumn Header="Description" Width="100" DisplayMemberBinding="{Binding Name}" />
+                    <GridViewColumn Header="On" Width="30">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsTabStop="False" IsChecked="{Binding Enabled, Mode=OneWay}"></CheckBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="X (Width)" Width="190">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"  />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Background="{Binding X, Converter={StaticResource ValueToBackgroundConverter}}" Grid.Column="0" Width="35" Height="20" TextAlignment="Right" Text="{Binding X, StringFormat=N2}"></TextBox>
+                                    <Slider Tag="{Binding}" MouseRightButtonUp="ResetSliderValue" ValueChanged="SliderValueChanged" Margin="5,1" Width="130" Maximum="5" Minimum="0" TickFrequency="0.1" Grid.Column="1" x:Name="x" Value="{Binding X}" SmallChange="0.01"></Slider>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Y (Height)" Width="190">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"  />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Background="{Binding Y, Converter={StaticResource ValueToBackgroundConverter}}" Grid.Column="0" Width="35" TextAlignment="Right" Text="{Binding Y, StringFormat=N2}"></TextBox>
+                                    <Slider Tag="{Binding}" MouseRightButtonUp="ResetSliderValue" ValueChanged="SliderValueChanged" Margin="5,1" Width="130" Maximum="5" Minimum="0" TickFrequency="0.1" Grid.Column="1" x:Name="y" Value="{Binding Y}" SmallChange="0.01"></Slider>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Z (Depth)" Width="190">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"  />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Background="{Binding Z, Converter={StaticResource ValueToBackgroundConverter}}" Grid.Column="0" Width="35" TextAlignment="Right" Text="{Binding Z, StringFormat=N2}"></TextBox>
+                                    <Slider Tag="{Binding}" MouseRightButtonUp="ResetSliderValue" ValueChanged="SliderValueChanged" Margin="5,1" Width="130" Maximum="5" Minimum="0" TickFrequency="0.1" Grid.Column="1" x:Name="z" Value="{Binding Z}" SmallChange="0.01"></Slider>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="? (Unused?)" Width="190">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="40"  />
+                                        <ColumnDefinition Width="140" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBox Background="{Binding B, Converter={StaticResource ValueToBackgroundConverter}}" Grid.Column="0" Width="35" TextAlignment="Right" Text="{Binding B, StringFormat=N2}"></TextBox>
+                                    <Slider Tag="{Binding}" MouseRightButtonUp="ResetSliderValue" ValueChanged="SliderValueChanged" Margin="5,1" Width="130" Maximum="5" Minimum="0" TickFrequency="0.1" Grid.Column="1" x:Name="b" Value="{Binding B}" SmallChange="0.01"></Slider>
+                                </Grid>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>
