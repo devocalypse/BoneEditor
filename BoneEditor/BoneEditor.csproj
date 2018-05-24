@@ -99,5 +99,10 @@
   <ItemGroup>
     <Resource Include="bone-editor.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="BoneDescriptor.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
