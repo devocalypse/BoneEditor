@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -111,6 +112,7 @@ namespace BoneEditor
         {
             FileLoaded = false;
             Bones.Clear();
+            var EnUsCultureInfo = CultureInfo.GetCultureInfo("en-US");
             foreach (var line in File.ReadLines(s))
             {
                 var parts = line.Split(',');
@@ -118,10 +120,10 @@ namespace BoneEditor
                 {
                     Id = int.Parse(parts[0]),
                     Code = parts[1],
-                    X = double.Parse(parts[3]),
-                    Y = double.Parse(parts[4]),
-                    Z = double.Parse(parts[5]),
-                    B = double.Parse(parts[6])
+                    X = double.Parse(parts[3], EnUsCultureInfo),
+                    Y = double.Parse(parts[4], EnUsCultureInfo),
+                    Z = double.Parse(parts[5], EnUsCultureInfo),
+                    B = double.Parse(parts[6], EnUsCultureInfo)
                 };
                 Bones.Add(b);
             }

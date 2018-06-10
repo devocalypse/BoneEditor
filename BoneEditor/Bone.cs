@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Runtime.CompilerServices;
 using BoneEditor.Annotations;
 
@@ -99,7 +100,10 @@ namespace BoneEditor
 
         public override string ToString()
         {
-            return $"{Id},{Code},{Enabled},{X:0.##},{Y:0.##},{Z:0.##},{B:0.##}";
-        }
+            return String.Format(CultureInfo.GetCultureInfo("en-US"), "{0},{1},{2},{3:0.##},{4:0.##},{5:0.##},{6:0.##}", new object[]
+            {
+               Id, Code, Enabled, X, Y, Z, B
+            });
+      }
     }
 }
